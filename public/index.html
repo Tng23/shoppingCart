@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Welcome to Firebase Hosting</title>
+
+    <script src="https://www.gstatic.com/firebasejs/5.5.5/firebase.js"></script>
+    <script>
+    // Initialize Firebase
+      var config = {
+        apiKey: "AIzaSyBqvSETqAlY3P2bhZr3m2Wz0J5-KTNig1M",
+        authDomain: "shoppingcart-34cb8.firebaseapp.com",
+        databaseURL: "https://shoppingcart-34cb8.firebaseio.com",
+        projectId: "shoppingcart-34cb8",
+        storageBucket: "shoppingcart-34cb8.appspot.com",
+        messagingSenderId: "306941945008"
+      };
+      firebase.initializeApp(config);
+    </script>
+    <script src="index.js"></script>
+
+    <!-- Firebase App is always required and must be first -->
+    <script src="https://www.gstatic.com/firebasejs/5.5.5/firebase-app.js"></script>
+
+  <!-- Add additional services that you want to use -->
+    <script src="https://www.gstatic.com/firebasejs/5.5.5/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.5.5/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.5.5/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.5.5/firebase-messaging.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.5.5/firebase-functions.js"></script>
+  <script>
+    var config = {
+      // ...
+    };
+    firebase.initializeApp(config);
+  </script>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="main.css" />
+      </head>
+      <body>
+        <div id="Container">
+        <div id="Header">
+        <header><h1>Jordan Apparel Store</h1></header>
+        <p id="hr"></p>
+        </div>
+
+        <div>
+          <br>
+            <h2>Jordan T-Shirt</h2>
+            <img src="images/jordanShirt.jpg">
+            <div id="buttons"><p>$25.00 </p><button class="add-to-cart" href="#" data-name="Jordan T-Shirt" data-price="25.00">Add to cart</button></div>
+            <h2>Air Jordan 11 Concord</h2>
+            <img src="images/jordans.jpg">
+            <br>
+            <div id="buttons"><p>$150.00 </p><button class="add-to-cart" href="#" data-name="Air Jordan 11 Concord" data-price="150.00">Add to cart</button></div>
+            <h2>Jordan Sweatshirt</h2>
+            <img src="images/jordanSweatshirt.jpg">
+            <br>
+            <div id="buttons"><p>$50.00</p><button class="add-to-cart" href="#" data-name="Jordan Sweatshirt" data-price="50.00">Add to cart</button></div>
+            <h2>Jordan Jersey</h2>
+            <img src="images/jordanJersey.jpg">
+            <br>
+            <div id="buttons"><p>$100.00 </p><button class="add-to-cart" href="#" data-name="Jordan Jersey" data-price="100.00">Add to Cart</button></div>
+            <br>
+        </div>
+
+        <div id="footer">
+          <p id="hr"></p>
+          <h2>CART</h2>
+          <div id="show-cart"></div>
+          <br>
+          <div>You have <span id="count-cart">0</span> items in your cart</div>
+          <br>
+          <div>Total Cart: $<span id="total-cart"></span></div>
+          <br>
+          <div><button id="clear-cart">Clear Cart</button></div>
+          <br>
+          <div><button id="purchase">Purchase</button></div>
+        </div>
+
+        <script src="shoppingCart.js"></script>
+        <script>
+              $(".add-to-cart").click(function(event){ //adds item to cart on button click
+                event.preventDefault();
+                var name = $(this).attr("data-name");
+                var price = Number($(this).attr("data-price"));
+
+                shoppingCart.addItemToCart(name, price, 1);
+                displayCart();
+            });
+
+            $("#clear-cart").click(function(event){ //clears items in cart
+                shoppingCart.clearCart();
+                displayCart();
+            });
+
+            $("#purchase").click(function(event){ //prompts for payment
+              if(shoppingCart.totalCart() == 0){
+                ("You have 0 items in your cart!");
+                return;
+              }else {
+                displayCart();
+                window.alert("Please pay: $" + shoppingCart.totalCart());
+                shoppingCart.clearCart();
+                displayCart();
+              }
+            })
+
+
+            function displayCart() { //displays the items in cart
+              var cartArray = shoppingCart.listCart();
+              var output = "";
+              for (var i in cartArray) {
+                  output += "<li>"
+                  +cartArray[i].name
+                  +"  <input class='item-count' type='number' data-name='"
+                  +cartArray[i].name
+                  +"' value='"
+                  +cartArray[i].count+"' >"
+                  +" x $"+cartArray[i].price
+                  +" = $"+cartArray[i].total
+                  +" <button class='plus-item' data-name='"
+                  +cartArray[i].name+"'>+</button>"
+                  +" <button class='subtract-item' data-name='"
+                  +cartArray[i].name+"'>-</button>"
+                  +" <button class='delete-item' data-name='"
+                  +cartArray[i].name+"'>Remove</button>"
+                  +"</li>";
+              }
+
+              $("#show-cart").html(output);
+              $("#count-cart").html(shoppingCart.countCart());
+              $("#total-cart").html(shoppingCart.totalCart());
+            }
+
+            $("#show-cart").on("click", ".delete-item", function(event){
+              var name = $(this).attr("data-name");
+              shoppingCart.removeItemFromCartAll(name);
+              displayCart();
+            });
+
+            $("#show-cart").on("click", ".subtract-item", function(event){
+              var name = $(this).attr("data-name");
+              shoppingCart.removeItemFromCart(name);
+              displayCart();
+            })
+
+            $("#show-cart").on("click", ".plus-item", function(event){
+              var name = $(this).attr("data-name");
+              shoppingCart.addItemToCart(name, 0, 1);
+              displayCart();
+            })
+
+            $("#show-cart").on("change", ".item-count", function(event){
+              var name = $(this).attr("data-name");
+              var count = Number( $(this).val() );
+              shoppingCart.setCountForItem(name, count);
+              displayCart();
+            })
+        </script>
+  </div>
+      </body>
+  </html>
